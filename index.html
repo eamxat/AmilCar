@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- COMPATIBILIDAD OBLIGATORIA -->
+    <!-- EDITAR TÍTULO DE LA PESTAÑA AQUÍ -->
+    <title>Amil Xatspace</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=Space+Grotesk:wght@300;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --bg-deep: #000000;
+            --text-color: #e0e0e0;
+            --gold-base: #d4af37;
+            --gold-light: #fbf5b7;
+            --gold-dark: #aa7700;
+        }
+
+        html {
+            scroll-behavior: smooth; /* SCROLL SUAVE UNIVERSAL */
+        }
+
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden; /* EVITA SCROLL LATERAL EN CUALQUIER DISPOSITIVO */
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-deep);
+            color: var(--text-color);
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+            /* Ocultar el cursor nativo globalmente y forzar isolation */
+            cursor: none !important;
+            isolation: isolate;
+        }
+        
+        * { cursor: none !important; }
+
+        /* --- TIPOGRAFÍA --- */
+        h1, h2, h3, .font-epic { font-family: 'Cinzel', serif; }
+        .font-syne { font-family: 'Syne', sans-serif; }
+
+        /* --- EFECTO ORO VOLUMÉTRICO --- */
+        .gold-text {
+            background: linear-gradient(to right, #aa7700 0%, #ffdf73 30%, #d4af37 50%, #ffdf73 70%, #aa7700 100%);
+            background-size: 200% auto; 
+            color: #000;
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            animation: shineGold 5s linear infinite;
+            text-shadow: 0 0 50px rgba(212, 175, 55, 0.5), 0 0 15px rgba(251, 245, 183, 0.3);
+        }
+        @keyframes shineGold { to { background-position: 200% center; } }
+
+        /* --- AVATAR Y ESTADO EN LÍNEA --- */
+        .profile-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 45px; 
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d4af37;
+            box-shadow: 0 0 15px rgba(212,175,55,0.6);
+            background-color: #000;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-origin: center;
+        }
+        .profile-status:hover .avatar {
+            transform: scale(1.15); 
+            box-shadow: 0 0 25px rgba(251, 245, 183, 0.8);
+        }
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #f5f5f5;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff4c;
+            border-radius: 50%;
+            animation: pulseOnline 1.5s infinite;
+            box-shadow: 0 0 6px #00ff4c;
+        }
+        @keyframes pulseOnline {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.3); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- PANTALLA DE INICIO (SPLASH LIMPIO Y ESTRELLAS CSS) --- */
+        #splash-screen {
+            position: fixed; inset: 0; z-index: 100000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-color: #000;
+            transition: opacity 0.5s ease-out; 
+            overflow: hidden;
+        }
+        
+        .stars-container {
+            position: absolute; inset: 0; width: 100%; height: 200%; z-index: 0;
+            pointer-events: none;
+        }
+        .stars-layer-1 {
+            position: absolute; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(1.5px 1.5px at 20px 30px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 90px 40px, rgba(212,175,55,0.8), transparent),
+                radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.5), transparent),
+                radial-gradient(1.5px 1.5px at 180px 50px, rgba(251,245,183,0.7), transparent);
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: starsMove 40s linear infinite;
+        }
+        .stars-layer-2 {
+            position: absolute; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 10px 10px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(2px 2px at 60px 80px, rgba(212,175,55,0.5), transparent),
+                radial-gradient(1.5px 1.5px at 110px 20px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(1px 1px at 140px 100px, rgba(251,245,183,0.4), transparent);
+            background-repeat: repeat;
+            background-size: 150px 150px;
+            animation: starsMove 60s linear infinite;
+        }
+        @keyframes starsMove {
+            from { transform: translateY(0); }
+            to { transform: translateY(-50%); }
+        }
+        
+        .hero { position: relative; }
+        .hero-content { 
+            position: relative; z-index: 10; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;
+        }
+
+        /* --- RENDER GOLD MONUMENTAL EN HERO --- */
+        .hero-render-gold {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: clamp(600px, 70vw, 1200px); 
+            z-index: 3; 
+            pointer-events: none;
+            filter: brightness(0.8) contrast(1.2) drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+            animation: floatHeroRender 6s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+        @media (max-width: 768px) {
+            .hero-render-gold {
+                width: 85vw; 
+                max-width: 100%;
+            }
+        }
+        @keyframes floatHeroRender {
+            0% { transform: translate(-50%, -50%) translateY(0px); }
+            100% { transform: translate(-50%, -50%) translateY(-20px); }
+        }
+
+        /* Botón Iniciar Funcional y Rápido */
+        #start-btn {
+            position: relative;
+            z-index: 5; 
+            background: rgba(10, 5, 0, 0.7);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-base);
+            padding: 1.2rem 4rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 800;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            transition: transform 0.2s, box-shadow 0.2s; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            border-radius: 4px;
+        }
+        #start-btn:hover {
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.6), inset 0 0 25px rgba(212, 175, 55, 0.3);
+            text-shadow: 0 0 10px var(--gold-light);
+            transform: scale(1.05);
+        }
+
+        /* --- VIDEO BACKGROUND --- */
+        .video-bg-container {
+            position: fixed; inset: 0; width: 100%; height: 100%; z-index: -10; background-color: var(--bg-deep);
+        }
+        .video-bg-container video {
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.9; filter: contrast(1.2) saturate(1.1) brightness(0.8);
+        }
+        .video-overlay {
+            position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.95) 100%); mix-blend-mode: multiply; pointer-events: none;
+        }
+
+        /* --- MOTORES DE CANVAS GLOBALES --- */
+        #particles-canvas {
+            position: fixed; inset: 0; width: 100%; height: 100%; z-index: 100; pointer-events: none; mix-blend-mode: screen;
+        }
+
+        /* --- RENDERS Y ANIMACIONES --- */
+        /* ANUBIS MONUMENTAL */
+        .hero-anubis {
+            position: absolute; 
+            bottom: -5%; 
+            right: -25%; 
+            width: clamp(1000px, 140vw, 2400px); 
+            max-width: none;
+            z-index: 5; 
+            pointer-events: none;
+            filter: drop-shadow(0 0 120px rgba(212, 175, 55, 0.6)) drop-shadow(0 40px 50px rgba(0,0,0,1)) contrast(1.2);
+            transform-origin: bottom center;
+            animation: breatheAnubis 8s infinite ease-in-out alternate;
+        }
+        @keyframes breatheAnubis { 
+            0% { transform: scale(1) translateY(0px); filter: drop-shadow(0 0 100px rgba(212, 175, 55, 0.5)) drop-shadow(0 40px 50px rgba(0,0,0,1)) contrast(1.2); } 
+            100% { transform: scale(1.02) translateY(-20px); filter: drop-shadow(0 0 150px rgba(212, 175, 55, 0.8)) drop-shadow(0 50px 60px rgba(0,0,0,1)) contrast(1.25); } 
+        }
+
+        /* --- ESTILOS DE TEXTO INTEGRADOS --- */
+        .glowing-word {
+            color: var(--gold-light);
+            text-shadow: 0 0 15px rgba(251, 245, 183, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
+            position: relative;
+            display: inline-block;
+        }
+        .floating-quote {
+            animation: floatQuoteText 8s ease-in-out infinite alternate;
+        }
+        @keyframes floatQuoteText {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-12px); }
+        }
+
+        /* --- UI ELEMENTS --- */
+        nav { transition: background 0.5s ease, box-shadow 0.5s ease; }
+        nav.nav-scrolled {
+            background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(212,175,55,0.15); padding-top: 1rem; padding-bottom: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+        }
+        .menu { display: flex; gap: 3rem; }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid rgba(212,175,55,0.1); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #1a1500, var(--gold-base), #1a1500);
+            border-radius: 4px; border: 1px solid #000;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #332800, var(--gold-light), #332800); }
+
+        /* --- GALERÍA --- */
+        .slider-3d-container { 
+            perspective: 1200px; min-height: 60vh; width: 100%; display: flex; align-items: center; justify-content: center; 
+            overflow: visible; padding: 3rem 0;
+        }
+        .slider-3d-wrap { 
+            position: relative; width: 240px; height: 340px; transform-style: preserve-3d; animation: rotateSlider 35s infinite linear; 
+        }
+        .slider-card {
+            position: absolute; width: 100%; height: 100%; background: #000; border: 1px solid rgba(212,175,55,0.4); 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: transform 0.4s ease;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.9);
+        }
+        .slider-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; filter: sepia(50%) contrast(1.2); transition: opacity 0.4s, filter 0.4s; cursor: pointer; }
+        .slider-card:hover { border-color: var(--gold-light); box-shadow: 0 0 40px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(212, 175, 55, 0.2); z-index: 10; transform: scale(1.05); }
+        .slider-card:hover img { opacity: 1; filter: sepia(0%) contrast(1.1) brightness(1.1); }
+        
+        .slider-card:nth-child(1) { transform: rotateY(0deg) translateZ(320px); }
+        .slider-card:nth-child(2) { transform: rotateY(60deg) translateZ(320px); }
+        .slider-card:nth-child(3) { transform: rotateY(120deg) translateZ(320px); }
+        .slider-card:nth-child(4) { transform: rotateY(180deg) translateZ(320px); }
+        .slider-card:nth-child(5) { transform: rotateY(240deg) translateZ(320px); }
+        .slider-card:nth-child(6) { transform: rotateY(300deg) translateZ(320px); }
+        @keyframes rotateSlider { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+        .slider-3d-wrap:hover { animation-play-state: paused; }
+
+        .parallax-glyph { text-shadow: 0 0 30px rgba(212, 175, 55, 0.6); will-change: transform; }
+
+        /* --- REPRODUCTOR EGIPCIO MÍSTICO (RESTAURADO EXACTO) --- */
+        .footer-player {
+            background-color: #080502;
+            background-image: 
+                radial-gradient(rgba(212,175,55,0.06) 1px, transparent 1px),
+                radial-gradient(rgba(212,175,55,0.03) 1px, transparent 1px);
+            background-size: 20px 20px, 15px 15px;
+            background-position: 0 0, 10px 10px;
+            border: 1px solid #d4af37;
+            border-radius: 4px;
+            box-shadow: 0 20px 50px rgba(0,0,0,1), 0 0 40px rgba(0, 120, 255, 0.15), inset 0 0 20px rgba(212,175,55,0.15);
+            position: relative;
+        }
+        .footer-player::before { content: ''; position: absolute; inset: 4px; border: 1px dashed rgba(212,175,55,0.2); pointer-events: none; }
+        .player-corner { position: absolute; width: 12px; height: 12px; border: 2px solid #fbf5b7; }
+        .player-corner.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .player-corner.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .player-corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .player-corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        /* Control Volumen Dorado */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; cursor: none !important; background: rgba(170, 119, 0, 0.5); border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 14px; width: 14px; border-radius: 50%; background: #d4af37; cursor: none !important;
+            -webkit-appearance: none; margin-top: -5px; box-shadow: 0 0 8px rgba(251, 245, 183, 0.8);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); box-shadow: 0 0 15px rgba(251, 245, 183, 1); }
+        input[type=range]::-moz-range-track { width: 100%; height: 3px; cursor: none !important; background: rgba(170, 119, 0, 0.5); border-radius: 2px; }
+        input[type=range]::-moz-range-thumb {
+            height: 14px; width: 14px; border-radius: 50%; background: #d4af37; cursor: none !important; border: none;
+            box-shadow: 0 0 8px rgba(251, 245, 183, 0.8); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        input[type=range]::-moz-range-thumb:hover { transform: scale(1.3); box-shadow: 0 0 15px rgba(251, 245, 183, 1); }
+
+        /* Ecualizador Fino */
+        .eq-bar { transform-origin: bottom; background: linear-gradient(to top, #aa7700, #fbf5b7); box-shadow: 0 0 5px rgba(212,175,55,0.5); }
+        @keyframes eqAnim1 { 0% { transform: scaleY(0.3); } 100% { transform: scaleY(0.9); } }
+        @keyframes eqAnim2 { 0% { transform: scaleY(0.5); } 100% { transform: scaleY(1); } }
+        @keyframes eqAnim3 { 0% { transform: scaleY(0.2); } 100% { transform: scaleY(0.7); } }
+        @keyframes eqAnim4 { 0% { transform: scaleY(0.6); } 100% { transform: scaleY(0.4); } }
+        .eq-bar:nth-child(1) { animation: eqAnim1 0.4s ease-in-out infinite alternate; }
+        .eq-bar:nth-child(2) { animation: eqAnim2 0.5s ease-in-out infinite alternate; }
+        .eq-bar:nth-child(3) { animation: eqAnim3 0.35s ease-in-out infinite alternate; }
+        .eq-bar:nth-child(4) { animation: eqAnim4 0.45s ease-in-out infinite alternate; }
+        .equalizer-container.paused .eq-bar { animation-play-state: paused; transform: scaleY(0.15) !important; transition: transform 0.3s; }
+
+        /* --- ESTILOS DE CURSOR OBLIGATORIOS Y ABSOLUTOS --- */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 38px; height: 38px;
+            background: url('cursor.png') center/contain no-repeat;
+            pointer-events: none; z-index: 9999999 !important;
+            transform: translate3d(0,0,0); will-change: transform;
+        }
+        #cursor-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999998 !important;
+        }
+
+        /* --- RESPONSIVE ANDROID + IOS (OBLIGATORIO) --- */
+        @media (max-width: 768px) {
+            .avatar { width: 38px; height: 38px; } 
+            .status-info { font-size: 11px; }
+            .menu { gap: 1.5rem; }
+            .menu a { font-size: 12px; }
+            
+            /* Ocultar cursor custom en móviles para fluidez táctil */
+            #custom-cursor, #cursor-particles { display: none !important; } 
+            body, * { cursor: auto !important; }
+            
+            /* Ajustes Galería Mobile */
+            .slider-3d-wrap { width: 150px; height: 220px; } 
+            .slider-card:nth-child(1) { transform: rotateY(0deg) translateZ(180px); }
+            .slider-card:nth-child(2) { transform: rotateY(60deg) translateZ(180px); }
+            .slider-card:nth-child(3) { transform: rotateY(120deg) translateZ(180px); }
+            .slider-card:nth-child(4) { transform: rotateY(180deg) translateZ(180px); }
+            .slider-card:nth-child(5) { transform: rotateY(240deg) translateZ(180px); }
+            .slider-card:nth-child(6) { transform: rotateY(300deg) translateZ(180px); }
+        }
+
+    </style>
+</head>
+<body class="antialiased selection:bg-[#aa7700] selection:text-white">
+
+    <!-- AUDIO AMBIENTAL -->
+    <!-- FALLBACKS CONFIGURADOS -->
+    <audio id="ambient-audio" preload="auto">
+      <source src="track1.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- PANTALLA DE INICIO LIMPIA -->
+    <div id="splash-screen" class="hero">
+        <div class="stars-container">
+            <div class="stars-layer-1"></div>
+            <div class="stars-layer-2"></div>
+        </div>
+        <div class="splash-content hover-trigger" style="position: relative; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- FUEGO MÍSTICO SOLO EN ESTA SECCIÓN (Z-INDEX MEDIO) -->
+            <canvas id="splash-fire-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[1]" width="400" height="400" style="width: 400px; height: 400px; mix-blend-mode: screen;"></canvas>
+            
+            <!-- BOTÓN ÚNICO -->
+            <button id="start-btn" class="relative z-[2]">INGRESAR</button>
+            
+        </div>
+    </div>
+
+    <!-- CAPAS DE FONDO ATMOSFÉRICO -->
+    <div class="video-bg-container">
+        <!-- FALLBACK CONFIGURADO -->
+        <video src="video.mp4" autoplay loop muted playsinline></video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- MOTOR DE FUEGO GLOBAL (A lo largo del scroll) -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- NAVEGACIÓN -->
+    <nav class="fixed w-full z-50 top-0 px-6 md:px-16 py-6 flex justify-between items-center text-white" id="navbar">
+        <!-- AVATAR Y ESTADO EN LÍNEA -->
+        <div class="flex flex-col">
+            <!-- EDITAR NOMBRE AQUÍ -->
+            <span class="font-epic text-transparent bg-clip-text bg-gradient-to-r from-[#d4af37] to-[#f5d77a] tracking-[0.3em] text-[13px] md:text-[15px] font-bold mb-1 ml-1 drop-shadow-[0_0_8px_rgba(212,175,55,0.8)]">AMIL</span>
+            <div class="profile-status hover-trigger group">
+                <img src="render.png" class="avatar" alt="Perfil">
+                <div class="status-info ml-1">
+                    <span class="font-space text-[11px] text-[#f5f5f5] tracking-wider">En línea</span>
+                    <span class="status-dot"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <nav class="menu font-syne uppercase tracking-[0.2em] font-bold">
+            <a href="#music" class="relative text-gray-300 hover:text-[#fbf5b7] transition-colors after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-[2px] after:bg-[#d4af37] hover:after:w-full after:transition-all">Música</a>
+            <a href="#gallery" class="relative text-gray-300 hover:text-[#fbf5b7] transition-colors after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-[2px] after:bg-[#d4af37] hover:after:w-full after:transition-all">Galería</a>
+        </nav>
+    </nav>
+
+    <main class="relative z-10">
+
+        <!-- HERO SECTION DESPUÉS DEL SPLASH -->
+        <section class="min-h-screen flex flex-col justify-center px-6 md:px-16 pt-20 relative overflow-hidden">
+            
+            <div class="relative z-20 md:w-3/5 drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)] mt-16"> 
+                <!-- EDITAR SUBTÍTULO HERO AQUÍ -->
+                <div class="overflow-hidden pl-2 border-l-2 border-[#d4af37] ml-2 reveal-subtitle">
+                    <span class="font-syne text-sm md:text-xl tracking-[0.6em] text-gray-300 uppercase drop-shadow-md">La frontera entre mito y código</span>
+                </div>
+            </div>
+
+            <!-- RENDER GOLD MONUMENTAL EN EL HERO PRINCIPAL -->
+            <img src="render.png" class="hero-render-gold" alt="Reliquia Dorada">
+
+            <!-- ANUBIS GIGANTE Y DOMINANTE -->
+            <!-- FALLBACK CONFIGURADO -->
+            <img src="anubis.png" loading="eager" class="hero-anubis" id="hero-anubis" alt="Dios Anubis">
+
+            <!-- GRADIENT INFERIOR PARA OCULTAR CORTE DE ANUBIS -->
+            <div class="absolute bottom-0 left-0 w-full h-[40vh] bg-gradient-to-t from-[#000] via-[rgba(0,0,0,0.95)] to-transparent z-[6] pointer-events-none"></div>
+
+        </section>
+
+        <!-- ✨ VERSÍCULO PRINCIPAL -->
+        <section class="py-32 relative z-20 flex flex-col items-center justify-center text-center px-6 border-b border-[rgba(212,175,55,0.05)] bg-gradient-to-b from-transparent via-[rgba(5,3,0,0.8)] to-transparent">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.08)_0%,transparent_50%)] pointer-events-none"></div>
+            
+            <div class="max-w-4xl scroll-reveal-text relative z-10">
+                <!-- EDITAR VERSÍCULO AQUÍ -->
+                <span class="font-syne text-[#aa7700] tracking-[0.5em] text-xs md:text-sm mb-8 block opacity-80 uppercase font-bold">Juan 1:4-5</span>
+                <p class="font-epic text-2xl md:text-4xl lg:text-5xl text-gray-300 leading-relaxed drop-shadow-lg">
+                    En él estaba la vida, y la vida era la <span class="glowing-word hover-trigger">luz</span> de los hombres.
+                </p>
+                <p class="font-epic text-xl md:text-3xl text-gray-400 mt-8 leading-relaxed drop-shadow-lg opacity-90">
+                    La <span class="glowing-word hover-trigger">luz</span> en las tinieblas resplandece, y las tinieblas no prevalecieron contra ella.
+                </p>
+            </div>
+        </section>
+
+        <!-- 👤 SECCIÓN "SOBRE MÍ" (Manifiesto) -->
+        <section class="py-40 relative z-20 flex flex-col items-center justify-center bg-gradient-to-b from-[#000] via-[rgba(15,10,0,0.6)] to-[#000] border-y border-[rgba(212,175,55,0.1)]">
+            <div class="w-px h-24 bg-gradient-to-b from-transparent to-[#d4af37] mb-12 opacity-60"></div>
+            
+            <div class="max-w-4xl px-8 text-center scroll-reveal-text">
+                <!-- EDITAR MANIFIESTO PERSONAL AQUÍ -->
+                <p class="font-space font-light text-2xl md:text-4xl text-gray-200 leading-relaxed tracking-wide drop-shadow-[0_5px_15px_rgba(0,0,0,0.9)]">
+                    "Soy Amílcar, no soy ni más ni menos, solo soy yo y ya la gente hablará, hagas lo que hagas.<br><br>
+                    <span class="font-epic gold-text text-3xl md:text-5xl block mt-4 hover-trigger">Y eso no me importa.</span>"
+                </p>
+            </div>
+            
+            <div class="w-px h-24 bg-gradient-to-t from-transparent to-[#d4af37] mt-12 opacity-60"></div>
+        </section>
+
+        <!-- AMBIENTE MÍSTICO (Quote Central) -->
+        <section class="min-h-screen flex items-center justify-center px-6 md:px-16 py-32 relative border-y border-[rgba(212,175,55,0.15)] bg-[rgba(0,0,0,0.6)] backdrop-blur-sm overflow-hidden" id="alive-code-section">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(212,175,55,0.1)_0%,transparent_60%)] rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-20 max-w-5xl text-center pointer-events-none">
+                <!-- EDITAR QUOTE CENTRAL MÍSTICO AQUÍ -->
+                <p class="font-epic text-3xl md:text-5xl lg:text-6xl text-[#d4af37] opacity-90 tracking-widest leading-relaxed floating-quote scroll-reveal-text drop-shadow-[0_10px_30px_rgba(0,0,0,1)]">
+                    "El hombre inteligente aprende de sus errores y el hombre sabio aprende de los errores de los demás."
+                </p>
+            </div>
+        </section>
+
+        <!-- 🧠 FRASE ESTRATÉGICA -->
+        <div class="w-full py-24 flex justify-center relative z-20 pointer-events-none">
+            <!-- EDITAR QUOTE FLOTANTE AQUÍ -->
+            <p class="font-epic text-lg md:text-2xl text-[#d4af37] opacity-60 tracking-widest text-center max-w-4xl px-6 floating-quote scroll-reveal-text drop-shadow-md">
+                "Una emoción no causa dolor. La resistencia o supresión de una emoción causa dolor."
+            </p>
+        </div>
+
+        <!-- 8. GALERÍA -->
+        <section id="gallery" class="gallery-section px-6 md:px-16 py-32 bg-[#000] relative z-30 border-t border-[rgba(212,175,55,0.15)] overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-[radial-gradient(circle,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none mix-blend-screen"></div>
+            
+            <div class="flex flex-col items-center text-center mb-16 relative z-10">
+                <!-- CAMBIAR NOMBRE DE SECCIÓN AQUÍ -->
+                <h2 class="text-5xl md:text-7xl font-epic font-bold uppercase text-white hover-trigger drop-shadow-[0_10px_30px_rgba(0,0,0,0.9)]">
+                    <span class="gold-text">Galería</span>
+                </h2>
+                <p class="font-syne text-[#d4af37] mt-6 tracking-[0.5em] uppercase text-xs font-bold bg-[rgba(20,10,0,0.5)] py-2 px-6 border border-[#aa7700] rounded-full shadow-[0_0_20px_rgba(212,175,55,0.2)]">Desliza el tiempo</p>
+            </div>
+            
+            <div class="slider-3d-container relative z-10">
+                <div class="slider-3d-wrap">
+                    <!-- Rutas preparadas para root en GitHub -->
+                    <div class="slider-card"><img src="gallery1.jpg" loading="lazy" alt="Item 1"></div>
+                    <div class="slider-card"><img src="gallery2.jpg" loading="lazy" alt="Item 2"></div>
+                    <div class="slider-card"><img src="gallery3.jpg" loading="lazy" alt="Item 3"></div>
+                    <div class="slider-card"><img src="gallery4.jpg" loading="lazy" alt="Item 4"></div>
+                    <div class="slider-card"><img src="gallery5.jpg" loading="lazy" alt="Item 5"></div>
+                    <div class="slider-card"><img src="gallery6.jpg" loading="lazy" alt="Item 6"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🧠 FRASE ESTRATÉGICA FINAL -->
+        <div class="w-full py-28 flex justify-center relative z-20 pointer-events-none bg-gradient-to-b from-transparent to-[#000]">
+            <!-- EDITAR QUOTE FINAL AQUÍ -->
+            <p class="font-epic text-lg md:text-2xl text-[#d4af37] opacity-60 tracking-widest text-center max-w-4xl px-6 floating-quote scroll-reveal-text drop-shadow-md">
+                "No sabemos lo que queremos y aun así somos responsables de lo que somos, eso es un hecho."
+            </p>
+        </div>
+
+        <!-- FOOTER Y REPRODUCTOR MUSICAL (SECCIÓN MÚSICA) -->
+        <footer id="music" class="pt-16 pb-24 px-6 md:px-16 border-t border-[rgba(212,175,55,0.3)] flex flex-col items-center bg-[#000] relative z-30 overflow-hidden">
+            
+            <div class="absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#fbf5b7] to-transparent opacity-80 shadow-[0_0_20px_#d4af37]"></div>
+
+            <!-- REPRODUCTOR MUSICAL MÍSTICO RESTAURADO -->
+            <div class="w-full max-w-md mx-auto footer-player p-6 mb-20 flex flex-col gap-4 relative z-20 group">
+                <div class="player-corner tl"></div><div class="player-corner tr"></div>
+                <div class="player-corner bl"></div><div class="player-corner br"></div>
+
+                <div class="flex justify-between items-center relative z-10">
+                    <div class="flex flex-col pointer-events-none">
+                        <span id="track-name" class="font-epic text-[#fbf5b7] text-lg tracking-widest drop-shadow-md">Canto de Osiris</span>
+                        <div class="flex items-center gap-3 mt-1">
+                            <div id="equalizer" class="equalizer-container paused flex items-end gap-[3px] h-4 w-6">
+                                <div class="eq-bar w-[3px] rounded-t-sm h-full"></div>
+                                <div class="eq-bar w-[3px] rounded-t-sm h-full"></div>
+                                <div class="eq-bar w-[3px] rounded-t-sm h-full"></div>
+                                <div class="eq-bar w-[3px] rounded-t-sm h-full"></div>
+                            </div>
+                            <span class="font-syne text-[#aa7700] text-[10px] tracking-[0.3em] uppercase font-bold">Ritual Sagrado</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-5 text-[#d4af37] relative z-50">
+                        <button id="btn-play-pause" class="transition-colors hover:text-[#fff] hover:scale-110 transform duration-200" style="cursor: none !important;">
+                            <svg id="icon-play" class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <svg id="icon-pause" class="w-8 h-8 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
+                        <button id="btn-next" class="transition-colors hover:text-[#fff] hover:scale-110 transform duration-200" style="cursor: none !important;">
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 mt-2 relative z-50">
+                    <svg class="w-4 h-4 text-[#aa7700]" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                    <input type="range" id="volume-slider" min="0" max="100" value="50" style="cursor: none !important;">
+                </div>
+            </div>
+
+            <!-- LOGO GIGANTE FOOTER -->
+            <div class="w-full flex justify-center items-center mb-16 relative z-10 pointer-events-none">
+                <h2 class="text-[12vw] leading-none font-epic font-bold opacity-10 gold-text text-center drop-shadow-[0_0_50px_rgba(212,175,55,0.8)]">
+                    AMUN-RA
+                </h2>
+            </div>
+
+            <a href="https://xat.com" target="_blank" class="hover-trigger relative z-10 group mt-4">
+                <div class="w-20 h-20 rounded-full border border-[#d4af37] flex items-center justify-center transition-all duration-500 bg-[rgba(10,5,0,0.5)] backdrop-blur-md group-hover:bg-[rgba(212,175,55,0.2)] group-hover:shadow-[0_0_40px_rgba(251,245,183,0.5)] group-hover:border-[#fbf5b7]">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-500 group-hover:scale-110 group-hover:stroke-[#fbf5b7]">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- EDITAR FIRMA FOOTER AQUÍ -->
+            <p class="font-syne text-[10px] text-[#aa7700] tracking-[0.6em] uppercase mt-16 relative z-10">©2026 EAM96 – MYSTIC DESIGN AAA</p>
+
+        </footer>
+
+    </main>
+
+    <!-- LIGHTBOX GALERÍA -->
+    <div id="gallery-lightbox" class="fixed inset-0 z-[999990] bg-black/90 backdrop-blur-md hidden flex items-center justify-center opacity-0 transition-opacity duration-300" style="cursor: auto !important;">
+        <img id="lightbox-img" src="" alt="Ampliación" class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-[0_0_50px_rgba(212,175,55,0.4)] scale-95 transition-transform duration-300 pointer-events-none">
+    </div>
+
+    <!-- ============================================== -->
+    <!-- EL CURSOR PERSONALIZADO Y SU CANVAS SE UBICAN AQUÍ -->
+    <!-- ============================================== -->
+    <canvas id="cursor-particles"></canvas>
+    <div id="custom-cursor"></div>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- GLOBAL VARIABLES & DATA ---
+        const hieroChars = ['𓀀','𓃭','𓅓','𓆣','𓋹','𓍹','𓎬','𓏣','𓁹','𓆗','𓋴','𓌂','𓂋','𓃀','𓆑','𓈖'];
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        // --- REPRODUCTOR DE AUDIO (Rutas preparadas para GitHub root) ---
+        const tracks = [
+            { name: "Canto de Osiris", url: "track1.mp3" },
+            { name: "Misterio Antiguo", url: "track2.mp3" },
+            { name: "Voces del Desierto", url: "track3.mp3" },
+            { name: "El Faraón", url: "track4.mp3" }
+        ];
+        
+        let currentTrackIndex = 0;
+        const ambientAudio = document.getElementById('ambient-audio');
+        const trackNameEl = document.getElementById('track-name');
+        const btnPlayPause = document.getElementById('btn-play-pause');
+        const btnNext = document.getElementById('btn-next');
+        const iconPlay = document.getElementById('icon-play');
+        const iconPause = document.getElementById('icon-pause');
+        const volumeSlider = document.getElementById('volume-slider');
+        const equalizer = document.getElementById('equalizer');
+        
+        let audioPlaying = false;
+
+        function loadTrack(index) {
+            ambientAudio.src = tracks[index].url;
+            trackNameEl.innerText = tracks[index].name;
+            ambientAudio.load();
+        }
+
+        function toggleAudio() {
+            if(audioPlaying) {
+                ambientAudio.pause();
+                iconPause.classList.add('hidden');
+                iconPlay.classList.remove('hidden');
+                equalizer.classList.add('paused');
+            } else {
+                let playPromise = ambientAudio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        iconPlay.classList.add('hidden');
+                        iconPause.classList.remove('hidden');
+                        equalizer.classList.remove('paused');
+                    }).catch(error => {
+                        console.error("Autoplay prevented on toggle", error);
+                    });
+                }
+            }
+            audioPlaying = !audioPlaying;
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            loadTrack(currentTrackIndex);
+            if(audioPlaying) { 
+                let playPromise = ambientAudio.play(); 
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error("Autoplay prevented on next", error);
+                    });
+                }
+            }
+        }
+
+        ambientAudio.addEventListener('ended', nextTrack);
+        btnPlayPause.addEventListener('click', toggleAudio);
+        btnNext.addEventListener('click', nextTrack);
+        
+        volumeSlider.addEventListener('input', (e) => {
+            ambientAudio.volume = e.target.value / 100;
+        });
+
+        loadTrack(0);
+        ambientAudio.volume = 0.5;
+
+        // --- LÓGICA LIGHTBOX GALERÍA ---
+        const lightbox = document.getElementById('gallery-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const galleryImages = document.querySelectorAll('.slider-card img');
+
+        galleryImages.forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                lightboxImg.src = img.src;
+                lightbox.classList.remove('hidden');
+                // Forzar reflow para animación CSS
+                void lightbox.offsetWidth;
+                lightbox.classList.remove('opacity-0');
+                lightbox.classList.add('opacity-100');
+                lightboxImg.classList.remove('scale-95');
+                lightboxImg.classList.add('scale-100');
+            });
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove('opacity-100');
+            lightbox.classList.add('opacity-0');
+            lightboxImg.classList.remove('scale-100');
+            lightboxImg.classList.add('scale-95');
+            setTimeout(() => {
+                lightbox.classList.add('hidden');
+            }, 300); // Coincide con la duración de la transición
+        }
+
+        lightbox.addEventListener('click', closeLightbox);
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) {
+                closeLightbox();
+            }
+        });
+
+        // --- SPLASH SCREEN LOGIC (ENTRADA RÁPIDA) ---
+        const splash = document.getElementById('splash-screen');
+        const startBtn = document.getElementById('start-btn');
+        let btnFireAnimId; 
+        
+        // Bloquear scroll inicial
+        document.body.style.overflow = 'hidden';
+
+        startBtn.addEventListener('click', () => {
+            cancelAnimationFrame(btnFireAnimId);
+
+            let playPromise = ambientAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    audioPlaying = true;
+                    iconPlay.classList.add('hidden');
+                    iconPause.classList.remove('hidden');
+                    equalizer.classList.remove('paused');
+                }).catch(e => {
+                    console.log("Audio autoplay prevented", e);
+                });
+            }
+
+            gsap.to(splash, {
+                opacity: 0,
+                duration: 0.5, 
+                ease: "power2.out",
+                onComplete: () => {
+                    splash.style.display = 'none';
+                    // Restaurar properties, asegurando scroll X oculto
+                    document.body.style.overflowY = 'auto'; 
+                    document.body.style.overflowX = 'hidden'; 
+                    ScrollTrigger.refresh();
+                    
+                    const tl = gsap.timeline();
+                    tl.from(".reveal-subtitle", { y: 50, opacity: 0, duration: 1, ease: "power3.out" })
+                      .from("#hero-anubis", { opacity: 0, scale: 1.02, y: 30, duration: 1.5, ease: "power2.out" }, "-=0.8");
+                }
+            });
+        });
+
+        // --- 3. PARTÍCULAS DE FUEGO MÍSTICO EN EL HERO (DETRÁS DEL BOTÓN) ---
+        class SplashFireParticle {
+            constructor(hCanvas) {
+                this.hCanvas = hCanvas;
+                this.x = Math.random() * hCanvas.width;
+                this.y = hCanvas.height - Math.random() * 50;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * -1.5 - 0.5;
+                this.speedX = (Math.random() - 0.5) * 1;
+                this.life = Math.random() * 80 + 40;
+                this.maxLife = this.life;
+                this.color = Math.random() > 0.5 ? '212, 175, 55' : '255, 140, 0'; 
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.life--;
+                this.size *= 0.98;
+                if(this.life <= 0) {
+                    this.x = Math.random() * this.hCanvas.width;
+                    this.y = this.hCanvas.height;
+                    this.life = Math.random() * 80 + 40;
+                    this.maxLife = this.life;
+                    this.size = Math.random() * 3 + 1;
+                }
+            }
+            draw(hCtx) {
+                hCtx.fillStyle = `rgba(${this.color}, ${this.life / this.maxLife})`;
+                hCtx.beginPath();
+                hCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                hCtx.fill();
+            }
+        }
+
+        const hCanvas = document.getElementById('splash-fire-canvas');
+        if (hCanvas) {
+            const hCtx = hCanvas.getContext('2d');
+            let hParticles = [];
+            
+            function initHeroFire() {
+                hParticles = [];
+                const pCount = 50; // Constante para el tamaño del mini canvas
+                for(let i=0; i<pCount; i++) {
+                    hParticles.push(new SplashFireParticle(hCanvas));
+                }
+            }
+            initHeroFire();
+
+            function animateHeroFire() {
+                hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+                hParticles.forEach(p => { p.update(); p.draw(hCtx); });
+                btnFireAnimId = requestAnimationFrame(animateHeroFire);
+            }
+            animateHeroFire();
+        }
+
+        // --- SCROLL NAV ---
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) { nav.classList.add('nav-scrolled'); } 
+            else { nav.classList.remove('nav-scrolled'); }
+        });
+
+        // ==========================================
+        // MOTOR CURSOR PERSONALIZADO Y PARTÍCULAS LERP
+        // ==========================================
+        const customCursor = document.getElementById('custom-cursor');
+        const cCanvas = document.getElementById('cursor-particles');
+        const cCtx = cCanvas.getContext('2d');
+        
+        let cursorX = window.innerWidth / 2;
+        let cursorY = window.innerHeight / 2;
+        let cParticles = [];
+        let lastSpawn = { x: 0, y: 0 };
+
+        function resizeCursorCanvas() {
+            cCanvas.width = window.innerWidth;
+            cCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCursorCanvas);
+        resizeCursorCanvas();
+
+        if (window.matchMedia("(pointer: fine)").matches) {
+            
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            function animateCustomCursor() {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                
+                if (customCursor) {
+                    customCursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+                }
+
+                let dist = Math.hypot(cursorX - lastSpawn.x, cursorY - lastSpawn.y);
+                if (dist > 15 && cParticles.length < 50) {
+                    cParticles.push({
+                        x: cursorX,
+                        y: cursorY + 15,
+                        vx: (Math.random() - 0.5) * 1.5,
+                        vy: Math.random() * 1.5 + 0.5, 
+                        life: 1,
+                        char: hieroChars[Math.floor(Math.random() * hieroChars.length)],
+                        size: Math.random() * 20 + 15 
+                    });
+                    lastSpawn.x = cursorX;
+                    lastSpawn.y = cursorY;
+                }
+
+                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+                for(let i = cParticles.length - 1; i >= 0; i--) {
+                    let p = cParticles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= 0.02;
+                    
+                    if(p.life <= 0) {
+                        cParticles.splice(i, 1);
+                    } else {
+                        cCtx.globalAlpha = p.life * 0.9; 
+                        cCtx.fillStyle = '#d4af37';
+                        cCtx.font = p.size + 'px Cinzel';
+                        cCtx.fillText(p.char, p.x, p.y);
+                    }
+                }
+                requestAnimationFrame(animateCustomCursor);
+            }
+            animateCustomCursor();
+        }
+
+        // --- SÍMBOLOS MÍSTICOS FLOTANTES EN LA SECCIÓN CENTRAL ---
+        const aliveSection = document.getElementById('alive-code-section');
+        if(aliveSection) {
+            for(let i=0; i<30; i++) {
+                let el = document.createElement('div');
+                el.className = 'absolute text-[#d4af37] pointer-events-none parallax-glyph';
+                el.innerText = hieroChars[Math.floor(Math.random()*hieroChars.length)];
+                
+                let size = Math.random() * 90 + 50; 
+                el.style.fontSize = size + 'px';
+                el.style.opacity = Math.random() * 0.15 + 0.05; 
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = Math.random() * 100 + '%';
+                
+                let speed = (Math.random() * 3 - 1.5).toFixed(2);
+                el.setAttribute('data-speed', speed);
+                
+                aliveSection.appendChild(el);
+                
+                gsap.to(el, {
+                    rotation: Math.random() > 0.5 ? 360 : -360,
+                    duration: Math.random() * 30 + 20,
+                    repeat: -1,
+                    ease: "none"
+                });
+            }
+        }
+
+        // --- GSAP SCROLL ANIMATIONS ---
+        gsap.utils.toArray('.scroll-reveal-text').forEach(text => {
+            gsap.from(text, {
+                y: 50, opacity: 0, duration: 1.2, ease: "power3.out",
+                scrollTrigger: { trigger: text, start: "top 85%" }
+            });
+        });
+
+        gsap.utils.toArray('.parallax-glyph').forEach(glyph => {
+            gsap.to(glyph, {
+                y: () => parseFloat(glyph.getAttribute('data-speed')) * 300, ease: "none",
+                scrollTrigger: { trigger: aliveSection, start: "top bottom", end: "bottom top", scrub: true }
+            });
+        });
+
+        // ==========================================
+        // MOTOR DE FUEGO GLOBAL (A lo largo del scroll)
+        // ==========================================
+        const pCanvas = document.getElementById('particles-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        let fireParticles = [];
+
+        function initGlobalFire() {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+            fireParticles = [];
+            const pCount = Math.min(window.innerWidth / 12, 100); 
+            for(let i=0; i<pCount; i++) {
+                fireParticles.push(new GlobalFireParticle());
+            }
+        }
+        window.addEventListener('resize', initGlobalFire);
+
+        class GlobalFireParticle {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * pCanvas.height;
+            }
+            reset() {
+                this.x = Math.random() * pCanvas.width;
+                this.y = pCanvas.height + Math.random() * 100;
+                this.size = Math.random() * 4 + 1.5;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.speedY = Math.random() * -3 - 1;
+                this.life = Math.random() * 150 + 50;
+                this.maxLife = this.life;
+                
+                const colors = [
+                    {r: 255, g: 204, b: 0},
+                    {r: 255, g: 102, b: 0},
+                    {r: 212, g: 175, b: 55}
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                let dx = mouseX - this.x;
+                let dy = mouseY - this.y;
+                let dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if(dist < 150) {
+                    this.speedX -= (dx / dist) * 0.05;
+                    this.speedY -= (dy / dist) * 0.05;
+                }
+
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                this.speedX += (Math.random() - 0.5) * 0.2;
+                this.speedX *= 0.98;
+
+                this.life--;
+                this.size *= 0.99;
+
+                if (this.life <= 0 || this.size < 0.2 || this.y < -50) {
+                    this.reset();
+                }
+            }
+            draw() {
+                const p = this.life / this.maxLife;
+                const opacity = p * 0.9;
+                
+                pCtx.globalCompositeOperation = 'screen';
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
+                
+                pCtx.shadowBlur = this.size * 4;
+                pCtx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
+                
+                pCtx.fill();
+            }
+        }
+
+        function animateGlobalFire() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+            for(let i=0; i<fireParticles.length; i++) {
+                fireParticles[i].update();
+                fireParticles[i].draw();
+            }
+            requestAnimationFrame(animateGlobalFire);
+        }
+
+        initGlobalFire();
+        animateGlobalFire();
+
+    </script>
+</body>
+</html>
