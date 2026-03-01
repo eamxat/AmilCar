@@ -360,6 +360,37 @@
             pointer-events: none; z-index: 9999998 !important;
         }
 
+        /* --- ESTILO ESCARABAJO FLOTANTE EN FOOTER --- */
+        .scarab-container {
+            position: absolute;
+            bottom: 40px; /* Ajusta la altura a la que quieres que esté del borde del footer */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px; /* Tamaño del escarabajo, ajustalo a tu gusto */
+            height: auto;
+            z-index: 20; /* Asegura que esté por encima del fondo pero sin tapar controles si es necesario */
+            animation: floatScarab 5s ease-in-out infinite alternate;
+            cursor: none; /* Asegura que se respete el cursor custom */
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .scarab-container:hover {
+            transform: translateX(-50%) scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.8)) brightness(1.2);
+            animation-play-state: paused; /* Pausa el flote al hacer hover */
+        }
+
+        .scarab-container:active {
+             /* Pequeña animación de giro/impulso al hacer click */
+             transform: translateX(-50%) scale(0.9) rotate(15deg);
+             transition: transform 0.1s ease;
+        }
+
+        @keyframes floatScarab {
+            0% { transform: translateX(-50%) translateY(0px); }
+            100% { transform: translateX(-50%) translateY(-15px); }
+        }
+
         /* --- RESPONSIVE ANDROID + IOS (OBLIGATORIO) --- */
         @media (max-width: 768px) {
             .avatar { width: 38px; height: 38px; } 
@@ -379,6 +410,12 @@
             .slider-card:nth-child(4) { transform: rotateY(180deg) translateZ(180px); }
             .slider-card:nth-child(5) { transform: rotateY(240deg) translateZ(180px); }
             .slider-card:nth-child(6) { transform: rotateY(300deg) translateZ(180px); }
+
+            /* Ajuste Escarabajo Mobile (Opcional, si lo quieres más pequeño) */
+            .scarab-container {
+                width: 60px;
+                bottom: 30px;
+            }
         }
 
     </style>
@@ -555,7 +592,7 @@
             <div class="absolute top-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#fbf5b7] to-transparent opacity-80 shadow-[0_0_20px_#d4af37]"></div>
 
             <!-- REPRODUCTOR MUSICAL MÍSTICO RESTAURADO -->
-            <div class="w-full max-w-md mx-auto footer-player p-6 mb-20 flex flex-col gap-4 relative z-20 group">
+            <div class="w-full max-w-md mx-auto footer-player p-6 mb-20 flex flex-col gap-4 relative z-20 group hover-trigger">
                 <div class="player-corner tl"></div><div class="player-corner tr"></div>
                 <div class="player-corner bl"></div><div class="player-corner br"></div>
 
@@ -591,10 +628,11 @@
             <!-- LOGO GIGANTE FOOTER -->
             <div class="w-full flex justify-center items-center mb-16 relative z-10 pointer-events-none">
                 <h2 class="text-[12vw] leading-none font-epic font-bold opacity-10 gold-text text-center drop-shadow-[0_0_50px_rgba(212,175,55,0.8)]">
-                    DJ-AMiL
+                    AMUN-RA
                 </h2>
             </div>
 
+            <!-- ENLACE XAT -->
             <a href="https://xat.com" target="_blank" class="hover-trigger relative z-10 group mt-4">
                 <div class="w-20 h-20 rounded-full border border-[#d4af37] flex items-center justify-center transition-all duration-500 bg-[rgba(10,5,0,0.5)] backdrop-blur-md group-hover:bg-[rgba(212,175,55,0.2)] group-hover:shadow-[0_0_40px_rgba(251,245,183,0.5)] group-hover:border-[#fbf5b7]">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-500 group-hover:scale-110 group-hover:stroke-[#fbf5b7]">
@@ -606,7 +644,10 @@
             </a>
 
             <!-- EDITAR FIRMA FOOTER AQUÍ -->
-            <p class="font-syne text-[10px] text-[#aa7700] tracking-[0.6em] uppercase mt-16 relative z-10">©2026 EAM96 – Xatspace Design</p>
+            <p class="font-syne text-[10px] text-[#aa7700] tracking-[0.6em] uppercase mt-16 relative z-10">©2026 EAM96 – MYSTIC DESIGN AAA</p>
+
+            <!-- ESCARABAJO FLOTANTE INTERACTIVO -->
+            <img src="escarabajo.png" alt="Escarabajo egipcio" class="scarab-container hover-trigger">
 
         </footer>
 
@@ -1100,7 +1141,6 @@
         const bgVideo = document.getElementById('bg-video');
         if (bgVideo) {
             bgVideo.addEventListener('timeupdate', function() {
-                // Previene el salto al final del video reiniciándolo milisegundos antes
                 if (this.currentTime >= this.duration - 0.15) {
                     this.currentTime = 0;
                     this.play();
