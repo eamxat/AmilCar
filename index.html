@@ -413,8 +413,8 @@
 
     <!-- CAPAS DE FONDO ATMOSFÉRICO -->
     <div class="video-bg-container">
-        <!-- FALLBACK CONFIGURADO EN RAÍZ -->
-        <video src="video.mp4" autoplay loop muted playsinline></video>
+        <!-- FALLBACK CONFIGURADO EN RAÍZ Y LOOP CORREGIDO CON ID -->
+        <video id="bg-video" src="video.mp4" autoplay loop muted playsinline></video>
         <div class="video-overlay"></div>
     </div>
 
@@ -1095,7 +1095,20 @@
             initGlobalFire();
             animateGlobalFire();
         }
+
+        // --- LOOP DE VIDEO SUAVE ---
+        const bgVideo = document.getElementById('bg-video');
+        if (bgVideo) {
+            bgVideo.addEventListener('timeupdate', function() {
+                // Previene el salto al final del video reiniciándolo milisegundos antes
+                if (this.currentTime >= this.duration - 0.15) {
+                    this.currentTime = 0;
+                    this.play();
+                }
+            });
+        }
     </script>
 </body>
 </html>
+
 
