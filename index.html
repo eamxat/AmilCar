@@ -217,22 +217,25 @@
         }
 
         /* --- RENDERS Y ANIMACIONES --- */
-        /* ANUBIS MONUMENTAL */
+        /* ANUBIS MONUMENTAL CORREGIDO */
         .hero-anubis {
             position: absolute; 
-            bottom: -5%; 
-            right: -25%; 
-            width: clamp(1000px, 140vw, 2400px); 
-            max-width: none;
+            bottom: 0; /* Anclado a la parte inferior real */
+            right: -5%; 
+            height: 95vh; /* Ajuste clave para que el rostro NUNCA se corte verticalmente */
+            width: auto;
+            max-width: 150vw; 
             z-index: 5; 
             pointer-events: none;
+            object-fit: contain;
+            object-position: bottom right;
             filter: drop-shadow(0 0 120px rgba(212, 175, 55, 0.6)) drop-shadow(0 40px 50px rgba(0,0,0,1)) contrast(1.2);
             transform-origin: bottom center;
             animation: breatheAnubis 8s infinite ease-in-out alternate;
         }
         @keyframes breatheAnubis { 
             0% { transform: scale(1) translateY(0px); filter: drop-shadow(0 0 100px rgba(212, 175, 55, 0.5)) drop-shadow(0 40px 50px rgba(0,0,0,1)) contrast(1.2); } 
-            100% { transform: scale(1.02) translateY(-20px); filter: drop-shadow(0 0 150px rgba(212, 175, 55, 0.8)) drop-shadow(0 50px 60px rgba(0,0,0,1)) contrast(1.25); } 
+            100% { transform: scale(1.02) translateY(-15px); filter: drop-shadow(0 0 150px rgba(212, 175, 55, 0.8)) drop-shadow(0 50px 60px rgba(0,0,0,1)) contrast(1.25); } 
         }
 
         /* --- ESTILOS DE TEXTO INTEGRADOS --- */
@@ -383,31 +386,34 @@
 <body class="antialiased selection:bg-[#aa7700] selection:text-white">
 
     <!-- AUDIO AMBIENTAL -->
-    <!-- FALLBACKS CONFIGURADOS -->
     <audio id="ambient-audio" preload="auto">
       <source src="track1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- PANTALLA DE INICIO LIMPIA -->
     <div id="splash-screen" class="hero">
+        <div class="absolute inset-0 bg-[url('background.jpg')] bg-cover bg-center filter grayscale brightness-25 contrast-150 blur-sm z-0 pointer-events-none"></div>
         <div class="stars-container">
             <div class="stars-layer-1"></div>
             <div class="stars-layer-2"></div>
         </div>
-        <div class="splash-content hover-trigger" style="position: relative; display: flex; justify-content: center; align-items: center;">
+        <div class="hero-content hover-trigger" style="position: relative; display: flex; justify-content: center; align-items: center;">
+            
+            <!-- RENDER GOLD MONUMENTAL EN LA PANTALLA INICIAL -->
+            <img src="render.png" class="hero-render-gold" style="z-index: 1;" alt="Reliquia Dorada">
             
             <!-- FUEGO MÍSTICO SOLO EN ESTA SECCIÓN (Z-INDEX MEDIO) -->
-            <canvas id="splash-fire-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[1]" width="400" height="400" style="width: 400px; height: 400px; mix-blend-mode: screen;"></canvas>
+            <canvas id="splash-fire-canvas" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[2]" width="400" height="400" style="width: 400px; height: 400px; mix-blend-mode: screen;"></canvas>
             
             <!-- BOTÓN ÚNICO -->
-            <button id="start-btn" class="relative z-[2]">INGRESAR</button>
+            <button id="start-btn" class="relative z-[5]">INGRESAR</button>
             
         </div>
     </div>
 
     <!-- CAPAS DE FONDO ATMOSFÉRICO -->
     <div class="video-bg-container">
-        <!-- FALLBACK CONFIGURADO -->
+        <!-- FALLBACK CONFIGURADO EN RAÍZ -->
         <video src="video.mp4" autoplay loop muted playsinline></video>
         <div class="video-overlay"></div>
     </div>
@@ -449,10 +455,7 @@
                 </div>
             </div>
 
-            <!-- RENDER GOLD MONUMENTAL EN EL HERO PRINCIPAL -->
-            <img src="render.png" class="hero-render-gold" alt="Reliquia Dorada">
-
-            <!-- ANUBIS GIGANTE Y DOMINANTE -->
+            <!-- ANUBIS GIGANTE Y DOMINANTE (Oculto inicialmente hasta ingresar) -->
             <!-- FALLBACK CONFIGURADO -->
             <img src="anubis.png" loading="eager" class="hero-anubis" id="hero-anubis" alt="Dios Anubis">
 
@@ -628,6 +631,9 @@
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
+        // Ocultar Anubis inicialmente para que NO aparezca en el splash
+        gsap.set("#hero-anubis", { autoAlpha: 0 });
+
         // --- REPRODUCTOR DE AUDIO (Rutas preparadas para GitHub root) ---
         const tracks = [
             { name: "Canto de Osiris", url: "track1.mp3" },
@@ -772,7 +778,7 @@
                     
                     const tl = gsap.timeline();
                     tl.from(".reveal-subtitle", { y: 50, opacity: 0, duration: 1, ease: "power3.out" })
-                      .from("#hero-anubis", { opacity: 0, scale: 1.02, y: 30, duration: 1.5, ease: "power2.out" }, "-=0.8");
+                      .to("#hero-anubis", { autoAlpha: 1, duration: 1.5, ease: "power2.out" }, "-=0.8");
                 }
             });
         });
@@ -845,69 +851,71 @@
         // ==========================================
         const customCursor = document.getElementById('custom-cursor');
         const cCanvas = document.getElementById('cursor-particles');
-        const cCtx = cCanvas.getContext('2d');
-        
-        let cursorX = window.innerWidth / 2;
-        let cursorY = window.innerHeight / 2;
-        let cParticles = [];
-        let lastSpawn = { x: 0, y: 0 };
+        let cCtx = null;
+        if (cCanvas) {
+            cCtx = cCanvas.getContext('2d');
+            let cursorX = window.innerWidth / 2;
+            let cursorY = window.innerHeight / 2;
+            let cParticles = [];
+            let lastSpawn = { x: 0, y: 0 };
 
-        function resizeCursorCanvas() {
-            cCanvas.width = window.innerWidth;
-            cCanvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCursorCanvas);
-        resizeCursorCanvas();
-
-        if (window.matchMedia("(pointer: fine)").matches) {
-            
-            window.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-            });
-
-            function animateCustomCursor() {
-                cursorX += (mouseX - cursorX) * 0.15;
-                cursorY += (mouseY - cursorY) * 0.15;
-                
-                if (customCursor) {
-                    customCursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
-                }
-
-                let dist = Math.hypot(cursorX - lastSpawn.x, cursorY - lastSpawn.y);
-                if (dist > 15 && cParticles.length < 50) {
-                    cParticles.push({
-                        x: cursorX,
-                        y: cursorY + 15,
-                        vx: (Math.random() - 0.5) * 1.5,
-                        vy: Math.random() * 1.5 + 0.5, 
-                        life: 1,
-                        char: hieroChars[Math.floor(Math.random() * hieroChars.length)],
-                        size: Math.random() * 20 + 15 
-                    });
-                    lastSpawn.x = cursorX;
-                    lastSpawn.y = cursorY;
-                }
-
-                cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
-                for(let i = cParticles.length - 1; i >= 0; i--) {
-                    let p = cParticles[i];
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.life -= 0.02;
-                    
-                    if(p.life <= 0) {
-                        cParticles.splice(i, 1);
-                    } else {
-                        cCtx.globalAlpha = p.life * 0.9; 
-                        cCtx.fillStyle = '#d4af37';
-                        cCtx.font = p.size + 'px Cinzel';
-                        cCtx.fillText(p.char, p.x, p.y);
-                    }
-                }
-                requestAnimationFrame(animateCustomCursor);
+            function resizeCursorCanvas() {
+                cCanvas.width = window.innerWidth;
+                cCanvas.height = window.innerHeight;
             }
-            animateCustomCursor();
+            window.addEventListener('resize', resizeCursorCanvas);
+            resizeCursorCanvas();
+
+            if (window.matchMedia("(pointer: fine)").matches) {
+                
+                window.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                });
+
+                function animateCustomCursor() {
+                    cursorX += (mouseX - cursorX) * 0.15;
+                    cursorY += (mouseY - cursorY) * 0.15;
+                    
+                    if (customCursor) {
+                        customCursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+                    }
+
+                    let dist = Math.hypot(cursorX - lastSpawn.x, cursorY - lastSpawn.y);
+                    if (dist > 15 && cParticles.length < 50) {
+                        cParticles.push({
+                            x: cursorX,
+                            y: cursorY + 15,
+                            vx: (Math.random() - 0.5) * 1.5,
+                            vy: Math.random() * 1.5 + 0.5, 
+                            life: 1,
+                            char: hieroChars[Math.floor(Math.random() * hieroChars.length)],
+                            size: Math.random() * 20 + 15 
+                        });
+                        lastSpawn.x = cursorX;
+                        lastSpawn.y = cursorY;
+                    }
+
+                    cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height);
+                    for(let i = cParticles.length - 1; i >= 0; i--) {
+                        let p = cParticles[i];
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.life -= 0.02;
+                        
+                        if(p.life <= 0) {
+                            cParticles.splice(i, 1);
+                        } else {
+                            cCtx.globalAlpha = p.life * 0.9; 
+                            cCtx.fillStyle = '#d4af37';
+                            cCtx.font = p.size + 'px Cinzel';
+                            cCtx.fillText(p.char, p.x, p.y);
+                        }
+                    }
+                    requestAnimationFrame(animateCustomCursor);
+                }
+                animateCustomCursor();
+            }
         }
 
         // --- SÍMBOLOS MÍSTICOS FLOTANTES EN LA SECCIÓN CENTRAL ---
@@ -954,95 +962,139 @@
         });
 
         // ==========================================
+        // MOTOR MATRIZ JEROGLÍFICA (LLUVIA)
+        // ==========================================
+        const mxCanvas = document.getElementById('matrix-canvas');
+        if (mxCanvas) {
+            const mxCtx = mxCanvas.getContext('2d');
+
+            let mxCols;
+            let mxDrops = [];
+            const fontSize = 28;
+
+            function initMatrix() {
+                mxCanvas.width = window.innerWidth;
+                mxCanvas.height = window.innerHeight;
+                mxCols = Math.floor(mxCanvas.width / fontSize);
+                mxDrops = [];
+                for(let x = 0; x < mxCols; x++) mxDrops[x] = Math.random() * 100;
+            }
+            window.addEventListener('resize', initMatrix);
+            initMatrix();
+
+            function drawMatrix() {
+                mxCtx.fillStyle = "rgba(0, 0, 0, 0.08)";
+                mxCtx.fillRect(0, 0, mxCanvas.width, mxCanvas.height);
+                
+                mxCtx.fillStyle = "rgba(212, 175, 55, 0.35)";
+                mxCtx.font = fontSize + "px 'Cinzel', serif";
+                mxCtx.textAlign = "center";
+
+                for(let i = 0; i < mxDrops.length; i++) {
+                    const text = hieroChars[Math.floor(Math.random() * hieroChars.length)];
+                    mxCtx.fillText(text, i * fontSize, mxDrops[i] * fontSize);
+                    
+                    if(mxDrops[i] * fontSize > mxCanvas.height && Math.random() > 0.97) {
+                        mxDrops[i] = 0;
+                    }
+                    mxDrops[i] += 0.5;
+                }
+                requestAnimationFrame(drawMatrix);
+            }
+            drawMatrix();
+        }
+
+        // ==========================================
         // MOTOR DE FUEGO GLOBAL (A lo largo del scroll)
         // ==========================================
         const pCanvas = document.getElementById('particles-canvas');
-        const pCtx = pCanvas.getContext('2d');
-        let fireParticles = [];
+        if (pCanvas) {
+            const pCtx = pCanvas.getContext('2d');
+            let fireParticles = [];
 
-        function initGlobalFire() {
-            pCanvas.width = window.innerWidth;
-            pCanvas.height = window.innerHeight;
-            fireParticles = [];
-            const pCount = Math.min(window.innerWidth / 12, 100); 
-            for(let i=0; i<pCount; i++) {
-                fireParticles.push(new GlobalFireParticle());
-            }
-        }
-        window.addEventListener('resize', initGlobalFire);
-
-        class GlobalFireParticle {
-            constructor() {
-                this.reset();
-                this.y = Math.random() * pCanvas.height;
-            }
-            reset() {
-                this.x = Math.random() * pCanvas.width;
-                this.y = pCanvas.height + Math.random() * 100;
-                this.size = Math.random() * 4 + 1.5;
-                this.speedX = (Math.random() - 0.5) * 1.5;
-                this.speedY = Math.random() * -3 - 1;
-                this.life = Math.random() * 150 + 50;
-                this.maxLife = this.life;
-                
-                const colors = [
-                    {r: 255, g: 204, b: 0},
-                    {r: 255, g: 102, b: 0},
-                    {r: 212, g: 175, b: 55}
-                ];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-            }
-            update() {
-                let dx = mouseX - this.x;
-                let dy = mouseY - this.y;
-                let dist = Math.sqrt(dx*dx + dy*dy);
-                
-                if(dist < 150) {
-                    this.speedX -= (dx / dist) * 0.05;
-                    this.speedY -= (dy / dist) * 0.05;
+            function initGlobalFire() {
+                pCanvas.width = window.innerWidth;
+                pCanvas.height = window.innerHeight;
+                fireParticles = [];
+                const pCount = Math.min(window.innerWidth / 12, 100); 
+                for(let i=0; i<pCount; i++) {
+                    fireParticles.push(new GlobalFireParticle());
                 }
+            }
+            window.addEventListener('resize', initGlobalFire);
 
-                this.x += this.speedX;
-                this.y += this.speedY;
-                
-                this.speedX += (Math.random() - 0.5) * 0.2;
-                this.speedX *= 0.98;
-
-                this.life--;
-                this.size *= 0.99;
-
-                if (this.life <= 0 || this.size < 0.2 || this.y < -50) {
+            class GlobalFireParticle {
+                constructor() {
                     this.reset();
+                    this.y = Math.random() * pCanvas.height;
+                }
+                reset() {
+                    this.x = Math.random() * pCanvas.width;
+                    this.y = pCanvas.height + Math.random() * 100;
+                    this.size = Math.random() * 4 + 1.5;
+                    this.speedX = (Math.random() - 0.5) * 1.5;
+                    this.speedY = Math.random() * -3 - 1;
+                    this.life = Math.random() * 150 + 50;
+                    this.maxLife = this.life;
+                    
+                    const colors = [
+                        {r: 255, g: 204, b: 0},
+                        {r: 255, g: 102, b: 0},
+                        {r: 212, g: 175, b: 55}
+                    ];
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    let dx = mouseX - this.x;
+                    let dy = mouseY - this.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < 150) {
+                        this.speedX -= (dx / dist) * 0.05;
+                        this.speedY -= (dy / dist) * 0.05;
+                    }
+
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    this.speedX += (Math.random() - 0.5) * 0.2;
+                    this.speedX *= 0.98;
+
+                    this.life--;
+                    this.size *= 0.99;
+
+                    if (this.life <= 0 || this.size < 0.2 || this.y < -50) {
+                        this.reset();
+                    }
+                }
+                draw() {
+                    const p = this.life / this.maxLife;
+                    const opacity = p * 0.9;
+                    
+                    pCtx.globalCompositeOperation = 'screen';
+                    pCtx.beginPath();
+                    pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    pCtx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
+                    
+                    pCtx.shadowBlur = this.size * 4;
+                    pCtx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
+                    
+                    pCtx.fill();
                 }
             }
-            draw() {
-                const p = this.life / this.maxLife;
-                const opacity = p * 0.9;
-                
-                pCtx.globalCompositeOperation = 'screen';
-                pCtx.beginPath();
-                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                pCtx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
-                
-                pCtx.shadowBlur = this.size * 4;
-                pCtx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${opacity})`;
-                
-                pCtx.fill();
+
+            function animateGlobalFire() {
+                pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+                for(let i=0; i<fireParticles.length; i++) {
+                    fireParticles[i].update();
+                    fireParticles[i].draw();
+                }
+                requestAnimationFrame(animateGlobalFire);
             }
+
+            initGlobalFire();
+            animateGlobalFire();
         }
-
-        function animateGlobalFire() {
-            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-            for(let i=0; i<fireParticles.length; i++) {
-                fireParticles[i].update();
-                fireParticles[i].draw();
-            }
-            requestAnimationFrame(animateGlobalFire);
-        }
-
-        initGlobalFire();
-        animateGlobalFire();
-
     </script>
 </body>
 </html>
