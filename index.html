@@ -636,10 +636,10 @@
 
         // --- REPRODUCTOR DE AUDIO (Rutas preparadas para GitHub root) ---
         const tracks = [
-            { name: "Gustavo Santaolalla - Babel", url: "track1.mp3" },
-            { name: "Age Ye Rooz - Arash Mohseni", url: "track2.mp3" },
-            { name: "Gloria Core - Vivaldi's Gloria", url: "track3.mp3" },
-            { name: "Los Chunguitos - Me quedo contigo", url: "track4.mp3" }
+            { name: "Canto de Osiris", url: "track1.mp3" },
+            { name: "Misterio Antiguo", url: "track2.mp3" },
+            { name: "Voces del Desierto", url: "track3.mp3" },
+            { name: "El Faraón", url: "track4.mp3" }
         ];
         
         let currentTrackIndex = 0;
@@ -660,37 +660,45 @@
             ambientAudio.load();
         }
 
-        function toggleAudio() {
-            if(audioPlaying) {
-                ambientAudio.pause();
-                iconPause.classList.add('hidden');
-                iconPlay.classList.remove('hidden');
-                equalizer.classList.add('paused');
-            } else {
-                let playPromise = ambientAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        iconPlay.classList.add('hidden');
-                        iconPause.classList.remove('hidden');
-                        equalizer.classList.remove('paused');
-                    }).catch(error => {
-                        console.error("Autoplay prevented on toggle", error);
-                    });
-                }
+        function playAudio() {
+            let playPromise = ambientAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    audioPlaying = true;
+                    iconPlay.classList.add('hidden');
+                    iconPause.classList.remove('hidden');
+                    equalizer.classList.remove('paused');
+                }).catch(error => {
+                    console.error("Autoplay prevenido por el navegador:", error);
+                    audioPlaying = false;
+                    iconPause.classList.add('hidden');
+                    iconPlay.classList.remove('hidden');
+                    equalizer.classList.add('paused');
+                });
             }
-            audioPlaying = !audioPlaying;
+        }
+
+        function pauseAudio() {
+            ambientAudio.pause();
+            audioPlaying = false;
+            iconPause.classList.add('hidden');
+            iconPlay.classList.remove('hidden');
+            equalizer.classList.add('paused');
+        }
+
+        function toggleAudio() {
+            if (audioPlaying) {
+                pauseAudio();
+            } else {
+                playAudio();
+            }
         }
 
         function nextTrack() {
             currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
             loadTrack(currentTrackIndex);
-            if(audioPlaying) { 
-                let playPromise = ambientAudio.play(); 
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error("Autoplay prevented on next", error);
-                    });
-                }
+            if (audioPlaying) { 
+                playAudio();
             }
         }
 
@@ -702,6 +710,7 @@
             ambientAudio.volume = e.target.value / 100;
         });
 
+        // Cargar primera canción e inicializar volumen
         loadTrack(0);
         ambientAudio.volume = 0.5;
 
@@ -753,17 +762,8 @@
         startBtn.addEventListener('click', () => {
             cancelAnimationFrame(btnFireAnimId);
 
-            let playPromise = ambientAudio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    audioPlaying = true;
-                    iconPlay.classList.add('hidden');
-                    iconPause.classList.remove('hidden');
-                    equalizer.classList.remove('paused');
-                }).catch(e => {
-                    console.log("Audio autoplay prevented", e);
-                });
-            }
+            // Desencadenar la reproducción automática segura tras el click del usuario
+            playAudio();
 
             gsap.to(splash, {
                 opacity: 0,
@@ -1110,6 +1110,7 @@
     </script>
 </body>
 </html>
+
 
 
 
